@@ -1,7 +1,6 @@
 {
   "name": "Ôn tập",
   "short_name": "Ôn tập",
-  "description": "Réviser le vocabulaire vietnamien",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",
@@ -9,7 +8,9 @@
   "background_color": "#ede8db",
   "theme_color": "#a3271f",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "icon-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-256x256.png", "sizes": "256x256", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512x512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }
