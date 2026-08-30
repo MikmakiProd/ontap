@@ -321,7 +321,7 @@ h1.title .vi{color:var(--lacquer)}
     </div>
     <div id="searchResults" class="search-results" hidden></div>
     <div class="grid" id="catGrid"></div>
-    <p class="foot">© 2026 Mikmaki Interactive<br><span class="ver">v2.4</span></p>
+    <p class="foot">© 2026 Mikmaki Interactive<br><span class="ver">v2.5</span></p>
   </section>
 
   <!-- ============ CATEGORY ============ -->
@@ -1660,11 +1660,9 @@ function detectLang(){
   return APP_LANGS.indexOf(code) >= 0 ? code : "en";    // sinon langue du téléphone, ou anglais par défaut
 }
 function initialLang(){
-  let stored = null;
-  try{ stored = localStorage.getItem("ontap_lang"); }catch(e){}
-  return (stored && APP_LANGS.indexOf(stored) >= 0) ? stored : detectLang();
+  return detectLang(); // toujours la langue du système du téléphone
 }
-let secLang = initialLang(); // choix manuel mémorisé, sinon langue du téléphone
+let secLang = initialLang(); // langue du système du téléphone à chaque ouverture
 
 /* ---- textes d'interface : tout sauf le vietnamien (contenu) ---- */
 const UI = {
