@@ -285,6 +285,16 @@ h1.title .vi{color:var(--lacquer)}
 .ct-head{font-size:11.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.09em;margin-bottom:8px;text-align:center}
 .ct-opt{font-size:18px;font-weight:600;color:var(--ink);padding:8px 6px;border-bottom:1px solid var(--line);text-align:center}
 .ct-opt:last-child{border-bottom:0}
+.chip.chip-see{border-color:var(--brass);color:var(--brass)}
+.words-modal{position:fixed;inset:0;z-index:300;background:rgba(23,33,29,.45);display:flex;align-items:flex-end;justify-content:center}
+.words-modal[hidden]{display:none}
+.wm-card{background:var(--paper);width:100%;max-width:520px;max-height:85vh;border-radius:20px 20px 0 0;display:flex;flex-direction:column;overflow:hidden}
+.wm-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line);font-size:18px;font-weight:800;color:var(--ink)}
+.wm-close{width:34px;height:34px;border-radius:50%;background:var(--card);border:1px solid var(--line);color:var(--ink);font-size:16px;flex:none}
+.wm-list{overflow-y:auto;padding:6px 18px 24px}
+.wm-row{display:flex;justify-content:space-between;gap:16px;padding:11px 2px;border-bottom:1px solid var(--line)}
+.wm-vi{font-weight:700;color:var(--ink)}
+.wm-tr{color:var(--muted);text-align:right}
 .foot{text-align:center;color:var(--muted);font-size:12.5px;font-weight:500;margin-top:34px;opacity:.8}
 .foot .ver{display:inline-block;margin-top:3px;font-size:11.5px;font-weight:600;opacity:.85}
 </style>
@@ -330,7 +340,7 @@ h1.title .vi{color:var(--lacquer)}
     </div>
     <div id="searchResults" class="search-results" hidden></div>
     <div class="grid" id="catGrid"></div>
-    <p class="foot">© 2026 Mikmaki Interactive<br><span class="ver">v4.4</span></p>
+    <p class="foot">© 2026 Mikmaki Interactive<br><span class="ver">v5.0</span></p>
   </section>
 
   <!-- ============ CATEGORY ============ -->
@@ -350,6 +360,9 @@ h1.title .vi{color:var(--lacquer)}
 
     <div class="section-label" id="lblCount">Nombre de cartes</div>
     <div class="opts" id="lenBox"></div>
+
+    <div class="section-label" id="lblWords">Mots de la catégorie</div>
+    <div class="opts" id="wordsBox"><button class="chip chip-see" id="listBtn" onclick="openWords()">Liste</button></div>
 
     <button class="start" onclick="startQuiz()">Commencer</button>
   </section>
@@ -518,7 +531,6 @@ const CATEGORIES = [
 {en:"Feel better",vi:"Đỡ hơn",exVi:"Tôi đỡ hơn rồi.",exEn:"I feel better now."},
 {en:"Doing better",vi:"Khá hơn",exVi:"Tôi khá hơn.",exEn:"I'm doing better."},
 {en:"Quite / fairly",vi:"Khá",exVi:"Trời khá nóng.",exEn:"Today it's quite hot."},
-{en:"Storage",vi:"Kho"},
 {en:"Cool (slang)",vi:"Chất vãi"},
 {en:"New",vi:"Mới",exVi:"Nhà mới",exEn:"New house"},
 {en:"Ready?",vi:"Sẵn sàng chưa?",exVi:"Sẵn sàng rồi.",exEn:"I'm ready."},
@@ -812,7 +824,8 @@ const CATEGORIES = [
 {en:"Toilet",vi:"Nhà vệ sinh",exVi:"Nhà vệ sinh ở đâu?",exEn:"Where is the toilet?"},
 {en:"Bed",vi:"Giường"},{en:"Bed sheets",vi:"Chăn ga"},{en:"Pillow",vi:"Gối"},
 {en:"Mattress",vi:"Nệm"},{en:"Phone ring",vi:"Đổ chuông"},{en:"Phone",vi:"Điện thoại"},
-{en:"Tower",vi:"Tháp"},{en:"Room",vi:"Phòng"}
+{en:"Tower",vi:"Tháp"},{en:"Room",vi:"Phòng"},
+{en:"Storage",vi:"Kho"},
 ]},
 
 {id:"job",name:"Job",items:[
@@ -1676,15 +1689,15 @@ let secLang = initialLang(); // langue du système du téléphone à chaque ouve
 
 /* ---- textes d'interface : tout sauf le vietnamien (contenu) ---- */
 const UI = {
-  fr:{back:"Catégories",dir:"Sens de la révision",count:"Nombre de cartes",start:"Commencer",reveal:"Voir la réponse",again:"J'avais tort",quit:"Quitter le quiz",knew:"J'avais raison",clues:"Indices",firstLetter:"1ʳᵉ lettre",secondLetter:"2ᵉ lettre",cluesHint:"Un seul est correct",redo:"Recommencer",other:"Autre catégorie",cats:"catégories",cards:"cartes",all:"Tout",enName:"Français",viName:"Vietnamien",listen:"Écouter",close:"Fermer",foot:"Toutes les catégories sont chargées. Bonne révision !",practice:"Écris le mot en vietnamien",resGood:"Réussis",resBad:"À revoir",retry:"Rejouer les mots ratés",st:{title:"Statistiques",empty:"Commence un quiz pour voir tes statistiques ici.",none:"Rien pour l'instant.",q1:"Est-ce que je progresse ?",q2:"Qu'est-ce que je maîtrise ?",q3:"Qu'est-ce que je dois réviser ?",progress:"Progression",streak:"Série",days:"jours",accuracy:"Précision",studyTime:"Temps d'étude",days7:"7 derniers jours",today:"Aujourd'hui",thisWeek:"Cette semaine",mastered:"Maîtrisés",learning:"En cours",review:"À revoir",byCategory:"Par catégorie",reviewNow:"Réviser maintenant",difficult:"Mots difficiles",fun:"Pour le plaisir",wordsLearned:"Mots appris",questions:"Questions répondues",perfect:"Sessions parfaites",longest:"Plus longue série",bestAcc:"Meilleure précision",settings:"Réglages",voice:"Voix / accent",voiceNote:"Les accents dépendent des voix installées sur l'appareil. iOS ne fournit que la voix du Nord (Hanoi) ; le Sud n'est pas disponible sur iPhone.",reset:"Remettre les statistiques à zéro",resetConfirm:"Remettre toutes les statistiques à zéro ? C'est définitif.",surpriseTitle:"Quiz surprise",surpriseMix:"Catégories mélangées",surpriseHint:"Change au lancement et toutes les 30 min",surpriseReroll:"Un autre quiz",surpriseSubCat:"Catégorie au hasard",surpriseSubMix:"Piochés dans toutes les catégories",search:"Rechercher un mot…",searchHead:"Résultats",searchNone:"Aucun mot trouvé."},
+  fr:{back:"Catégories",dir:"Sens de la révision",count:"Nombre de cartes",start:"Commencer",reveal:"Voir la réponse",again:"J'avais tort",quit:"Quitter le quiz",knew:"J'avais raison",clues:"Indices",firstLetter:"1ʳᵉ lettre",secondLetter:"2ᵉ lettre",cluesHint:"Un seul est correct",redo:"Recommencer",other:"Autre catégorie",cats:"catégories",cards:"cartes",all:"Tout",enName:"Français",viName:"Vietnamien",listen:"Écouter",close:"Fermer",foot:"Toutes les catégories sont chargées. Bonne révision !",practice:"Écris le mot en vietnamien",resGood:"Réussis",resBad:"À revoir",retry:"Rejouer les mots ratés",seeAll:"Liste",wordsSection:"Mots de la catégorie",st:{title:"Statistiques",empty:"Commence un quiz pour voir tes statistiques ici.",none:"Rien pour l'instant.",q1:"Est-ce que je progresse ?",q2:"Qu'est-ce que je maîtrise ?",q3:"Qu'est-ce que je dois réviser ?",progress:"Progression",streak:"Série",days:"jours",accuracy:"Précision",studyTime:"Temps d'étude",days7:"7 derniers jours",today:"Aujourd'hui",thisWeek:"Cette semaine",mastered:"Maîtrisés",learning:"En cours",review:"À revoir",byCategory:"Par catégorie",reviewNow:"Réviser maintenant",difficult:"Mots difficiles",fun:"Pour le plaisir",wordsLearned:"Mots appris",questions:"Questions répondues",perfect:"Sessions parfaites",longest:"Plus longue série",bestAcc:"Meilleure précision",settings:"Réglages",voice:"Voix / accent",voiceNote:"Les accents dépendent des voix installées sur l'appareil. iOS ne fournit que la voix du Nord (Hanoi) ; le Sud n'est pas disponible sur iPhone.",reset:"Remettre les statistiques à zéro",resetConfirm:"Remettre toutes les statistiques à zéro ? C'est définitif.",surpriseTitle:"Quiz surprise",surpriseMix:"Catégories mélangées",surpriseHint:"Change au lancement et toutes les 30 min",surpriseReroll:"Un autre quiz",surpriseSubCat:"Catégorie au hasard",surpriseSubMix:"Piochés dans toutes les catégories",search:"Rechercher un mot…",searchHead:"Résultats",searchNone:"Aucun mot trouvé."},
     res:[{t:"Xuất sắc !",s:"Sans faute. Tu peux commander ton phở les yeux fermés."},{t:"Giỏi lắm !",s:"Presque parfait. Deux-trois mots font encore les timides."},{t:"Khá !",s:"Pas mal. Ton cerveau chauffe, c'est bon signe."},{t:"Cố gắng nữa nhé",s:"Aïe. Les mots ont gagné cette manche. On remet ça ?"}]},
-  en:{back:"Categories",dir:"Review direction",count:"Number of cards",start:"Start",reveal:"Show answer",again:"I was wrong",quit:"Quit quiz",knew:"I was right",clues:"Clues",firstLetter:"First letter",secondLetter:"Second letter",cluesHint:"Only one is correct",redo:"Start over",other:"Other category",cats:"categories",cards:"cards",all:"All",enName:"English",viName:"Vietnamese",listen:"Listen",close:"Close",foot:"All categories loaded. Happy studying!",practice:"Write the word in Vietnamese",resGood:"Got right",resBad:"To review",retry:"Retry missed words",st:{title:"Statistics",empty:"Start a quiz to see your stats show up here.",none:"Nothing yet.",q1:"Am I making progress?",q2:"What do I master?",q3:"What should I review?",progress:"Progress",streak:"Streak",days:"days",accuracy:"Accuracy",studyTime:"Study time",days7:"Last 7 days",today:"Today",thisWeek:"This week",mastered:"Mastered",learning:"Learning",review:"To review",byCategory:"By category",reviewNow:"Review now",difficult:"Difficult words",fun:"For fun",wordsLearned:"Words learned",questions:"Questions answered",perfect:"Perfect sessions",longest:"Longest streak",bestAcc:"Best accuracy",settings:"Settings",voice:"Voice / accent",voiceNote:"Accents depend on the voices installed on your device. iOS only ships the Northern (Hanoi) voice; Southern is not available on iPhone.",reset:"Reset statistics",resetConfirm:"Reset all statistics? This cannot be undone.",surpriseTitle:"Surprise quiz",surpriseMix:"Mixed Categories",surpriseHint:"Changes on launch and every 30 min",surpriseReroll:"Another quiz",surpriseSubCat:"Random category",surpriseSubMix:"Pulled from all categories",search:"Search a word…",searchHead:"Results",searchNone:"No word found."},
+  en:{back:"Categories",dir:"Review direction",count:"Number of cards",start:"Start",reveal:"Show answer",again:"I was wrong",quit:"Quit quiz",knew:"I was right",clues:"Clues",firstLetter:"First letter",secondLetter:"Second letter",cluesHint:"Only one is correct",redo:"Start over",other:"Other category",cats:"categories",cards:"cards",all:"All",enName:"English",viName:"Vietnamese",listen:"Listen",close:"Close",foot:"All categories loaded. Happy studying!",practice:"Write the word in Vietnamese",resGood:"Got right",resBad:"To review",retry:"Retry missed words",seeAll:"List",wordsSection:"Category words",st:{title:"Statistics",empty:"Start a quiz to see your stats show up here.",none:"Nothing yet.",q1:"Am I making progress?",q2:"What do I master?",q3:"What should I review?",progress:"Progress",streak:"Streak",days:"days",accuracy:"Accuracy",studyTime:"Study time",days7:"Last 7 days",today:"Today",thisWeek:"This week",mastered:"Mastered",learning:"Learning",review:"To review",byCategory:"By category",reviewNow:"Review now",difficult:"Difficult words",fun:"For fun",wordsLearned:"Words learned",questions:"Questions answered",perfect:"Perfect sessions",longest:"Longest streak",bestAcc:"Best accuracy",settings:"Settings",voice:"Voice / accent",voiceNote:"Accents depend on the voices installed on your device. iOS only ships the Northern (Hanoi) voice; Southern is not available on iPhone.",reset:"Reset statistics",resetConfirm:"Reset all statistics? This cannot be undone.",surpriseTitle:"Surprise quiz",surpriseMix:"Mixed Categories",surpriseHint:"Changes on launch and every 30 min",surpriseReroll:"Another quiz",surpriseSubCat:"Random category",surpriseSubMix:"Pulled from all categories",search:"Search a word…",searchHead:"Results",searchNone:"No word found."},
     res:[{t:"Xuất sắc !",s:"Flawless. Order your phở with your eyes closed."},{t:"Giỏi lắm !",s:"Almost perfect. A couple of words are still playing shy."},{t:"Khá !",s:"Not bad. Your brain is warming up."},{t:"Cố gắng nữa nhé",s:"Ouch. The words won this round. Rematch?"}]},
-  ko:{back:"카테고리",dir:"복습 방향",count:"카드 수",start:"시작",reveal:"정답 보기",again:"틀렸어요",quit:"퀴즈 종료",knew:"맞았어요",clues:"힌트",firstLetter:"첫 글자",secondLetter:"둘째 글자",cluesHint:"정답은 하나예요",redo:"다시 하기",other:"다른 카테고리",cats:"카테고리",cards:"장",all:"전체",enName:"한국어",viName:"베트남어",listen:"듣기",close:"닫기",foot:"모든 카테고리가 준비됐어요. 복습 화이팅!",practice:"베트남어로 단어를 쓰기",resGood:"정답",resBad:"복습",retry:"틀린 단어 다시 풀기",st:{title:"통계",empty:"퀴즈를 시작하면 통계가 여기에 표시돼요.",none:"아직 없어요.",q1:"나는 성장하고 있나요?",q2:"무엇을 마스터했나요?",q3:"무엇을 복습해야 하나요?",progress:"진도",streak:"연속",days:"일",accuracy:"정확도",studyTime:"학습 시간",days7:"최근 7일",today:"오늘",thisWeek:"이번 주",mastered:"마스터",learning:"학습 중",review:"복습 필요",byCategory:"카테고리별",reviewNow:"지금 복습",difficult:"어려운 단어",fun:"재미 통계",wordsLearned:"배운 단어",questions:"푼 문제",perfect:"만점 세션",longest:"최장 연속",bestAcc:"최고 정확도",settings:"설정",voice:"음성 / 억양",voiceNote:"억양은 기기에 설치된 음성에 따라 달라져요. iOS는 북부(하노이) 음성만 제공하며 아이폰에는 남부 음성이 없어요.",reset:"통계 초기화",resetConfirm:"모든 통계를 초기화할까요? 되돌릴 수 없어요.",surpriseTitle:"깜짝 퀴즈",surpriseMix:"혼합 카테고리",surpriseHint:"실행할 때와 30분마다 바뀝니다",surpriseReroll:"다른 퀴즈",surpriseSubCat:"무작위 카테고리",surpriseSubMix:"모든 카테고리에서 추출",search:"단어 검색…",searchHead:"결과",searchNone:"단어를 찾을 수 없어요."},
+  ko:{back:"카테고리",dir:"복습 방향",count:"카드 수",start:"시작",reveal:"정답 보기",again:"틀렸어요",quit:"퀴즈 종료",knew:"맞았어요",clues:"힌트",firstLetter:"첫 글자",secondLetter:"둘째 글자",cluesHint:"정답은 하나예요",redo:"다시 하기",other:"다른 카테고리",cats:"카테고리",cards:"장",all:"전체",enName:"한국어",viName:"베트남어",listen:"듣기",close:"닫기",foot:"모든 카테고리가 준비됐어요. 복습 화이팅!",practice:"베트남어로 단어를 쓰기",resGood:"정답",resBad:"복습",retry:"틀린 단어 다시 풀기",seeAll:"목록",wordsSection:"카테고리 단어",st:{title:"통계",empty:"퀴즈를 시작하면 통계가 여기에 표시돼요.",none:"아직 없어요.",q1:"나는 성장하고 있나요?",q2:"무엇을 마스터했나요?",q3:"무엇을 복습해야 하나요?",progress:"진도",streak:"연속",days:"일",accuracy:"정확도",studyTime:"학습 시간",days7:"최근 7일",today:"오늘",thisWeek:"이번 주",mastered:"마스터",learning:"학습 중",review:"복습 필요",byCategory:"카테고리별",reviewNow:"지금 복습",difficult:"어려운 단어",fun:"재미 통계",wordsLearned:"배운 단어",questions:"푼 문제",perfect:"만점 세션",longest:"최장 연속",bestAcc:"최고 정확도",settings:"설정",voice:"음성 / 억양",voiceNote:"억양은 기기에 설치된 음성에 따라 달라져요. iOS는 북부(하노이) 음성만 제공하며 아이폰에는 남부 음성이 없어요.",reset:"통계 초기화",resetConfirm:"모든 통계를 초기화할까요? 되돌릴 수 없어요.",surpriseTitle:"깜짝 퀴즈",surpriseMix:"혼합 카테고리",surpriseHint:"실행할 때와 30분마다 바뀝니다",surpriseReroll:"다른 퀴즈",surpriseSubCat:"무작위 카테고리",surpriseSubMix:"모든 카테고리에서 추출",search:"단어 검색…",searchHead:"결과",searchNone:"단어를 찾을 수 없어요."},
     res:[{t:"Xuất sắc !",s:"만점! 이제 눈 감고 쌀국수 주문 가능."},{t:"Giỏi lắm !",s:"거의 완벽. 단어 몇 개가 아직 부끄럼 타는 중."},{t:"Khá !",s:"나쁘지 않아요. 뇌가 예열 중이에요."},{t:"Cố gắng nữa nhé",s:"아이고. 이번 판은 단어가 이겼네요. 다시?"}]},
-  zh:{back:"类别",dir:"复习方向",count:"卡片数量",start:"开始",reveal:"查看答案",again:"我答错了",quit:"退出测验",knew:"我答对了",clues:"提示",firstLetter:"首字母",secondLetter:"第二个字母",cluesHint:"只有一个正确",redo:"重新开始",other:"其他类别",cats:"类别",cards:"张",all:"全部",enName:"中文",viName:"越南语",listen:"听",close:"关闭",foot:"",practice:"用越南语写出这个词",resGood:"答对",resBad:"需复习",retry:"重做错题",st:{title:"统计",empty:"开始一个测验，统计就会出现在这里。",none:"暂时没有。",q1:"我在进步吗？",q2:"我掌握了什么？",q3:"我该复习什么？",progress:"进度",streak:"连续天数",days:"天",accuracy:"正确率",studyTime:"学习时间",days7:"最近 7 天",today:"今天",thisWeek:"本周",mastered:"已掌握",learning:"学习中",review:"需复习",byCategory:"按类别",reviewNow:"立即复习",difficult:"难词",fun:"趣味数据",wordsLearned:"已学单词",questions:"已答题目",perfect:"满分场次",longest:"最长连续",bestAcc:"最佳正确率",settings:"设置",voice:"语音 / 口音",voiceNote:"口音取决于设备上安装的语音。iOS 只提供北部（河内）口音，iPhone 上没有南部口音。",reset:"重置统计",resetConfirm:"重置所有统计数据？此操作无法撤销。",surpriseTitle:"惊喜测验",surpriseMix:"混合类别",surpriseHint:"启动时及每 30 分钟更换",surpriseReroll:"换一个",surpriseSubCat:"随机类别",surpriseSubMix:"从所有类别中抽取",search:"搜索单词…",searchHead:"结果",searchNone:"未找到单词。"},
+  zh:{back:"类别",dir:"复习方向",count:"卡片数量",start:"开始",reveal:"查看答案",again:"我答错了",quit:"退出测验",knew:"我答对了",clues:"提示",firstLetter:"首字母",secondLetter:"第二个字母",cluesHint:"只有一个正确",redo:"重新开始",other:"其他类别",cats:"类别",cards:"张",all:"全部",enName:"中文",viName:"越南语",listen:"听",close:"关闭",foot:"",practice:"用越南语写出这个词",resGood:"答对",resBad:"需复习",retry:"重做错题",seeAll:"列表",wordsSection:"本类别单词",st:{title:"统计",empty:"开始一个测验，统计就会出现在这里。",none:"暂时没有。",q1:"我在进步吗？",q2:"我掌握了什么？",q3:"我该复习什么？",progress:"进度",streak:"连续天数",days:"天",accuracy:"正确率",studyTime:"学习时间",days7:"最近 7 天",today:"今天",thisWeek:"本周",mastered:"已掌握",learning:"学习中",review:"需复习",byCategory:"按类别",reviewNow:"立即复习",difficult:"难词",fun:"趣味数据",wordsLearned:"已学单词",questions:"已答题目",perfect:"满分场次",longest:"最长连续",bestAcc:"最佳正确率",settings:"设置",voice:"语音 / 口音",voiceNote:"口音取决于设备上安装的语音。iOS 只提供北部（河内）口音，iPhone 上没有南部口音。",reset:"重置统计",resetConfirm:"重置所有统计数据？此操作无法撤销。",surpriseTitle:"惊喜测验",surpriseMix:"混合类别",surpriseHint:"启动时及每 30 分钟更换",surpriseReroll:"换一个",surpriseSubCat:"随机类别",surpriseSubMix:"从所有类别中抽取",search:"搜索单词…",searchHead:"结果",searchNone:"未找到单词。"},
     res:[{t:"Xuất sắc !",s:"满分！可以闭着眼睛点越南粉了。"},{t:"Giỏi lắm !",s:"几乎完美，还有几个词在装害羞。"},{t:"Khá !",s:"还不错，大脑开始热身了。"},{t:"Cố gắng nữa nhé",s:"哎哟，这局单词赢了。再来一次？"}]},
-  vi:{back:"Danh mục",dir:"Chiều ôn tập",count:"Số thẻ",start:"Bắt đầu",reveal:"Xem đáp án",again:"Tôi sai",quit:"Thoát",knew:"Tôi đúng",clues:"Gợi ý",firstLetter:"Chữ đầu",secondLetter:"Chữ thứ hai",cluesHint:"Chỉ một đáp án đúng",redo:"Làm lại",other:"Danh mục khác",cats:"danh mục",cards:"thẻ",all:"Tất cả",enName:"Tiếng Anh",viName:"Tiếng Việt",listen:"Nghe",close:"Đóng",foot:"Đã tải tất cả danh mục. Chúc ôn tập vui!",practice:"Viết từ bằng tiếng Việt",resGood:"Đúng",resBad:"Cần ôn",retry:"Ôn lại từ sai",st:{title:"Thống kê",empty:"Bắt đầu một bài để xem thống kê ở đây.",none:"Chưa có gì.",q1:"Mình có tiến bộ không?",q2:"Mình thạo cái gì?",q3:"Mình cần ôn gì?",progress:"Tiến độ",streak:"Chuỗi",days:"ngày",accuracy:"Độ chính xác",studyTime:"Thời gian học",days7:"7 ngày qua",today:"Hôm nay",thisWeek:"Tuần này",mastered:"Đã thạo",learning:"Đang học",review:"Cần ôn",byCategory:"Theo danh mục",reviewNow:"Ôn ngay",difficult:"Từ khó",fun:"Cho vui",wordsLearned:"Từ đã học",questions:"Số câu đã trả lời",perfect:"Phiên hoàn hảo",longest:"Chuỗi dài nhất",bestAcc:"Chính xác cao nhất",settings:"Cài đặt",voice:"Giọng / vùng miền",voiceNote:"Giọng phụ thuộc vào các giọng đã cài trên máy. iOS chỉ có giọng miền Bắc (Hà Nội); iPhone không có giọng miền Nam.",reset:"Đặt lại thống kê",resetConfirm:"Đặt lại toàn bộ thống kê? Không thể hoàn tác.",surpriseTitle:"Quiz bất ngờ",surpriseMix:"Chủ đề hỗn hợp",surpriseHint:"Đổi khi mở app và mỗi 30 phút",surpriseReroll:"Quiz khác",surpriseSubCat:"Danh mục ngẫu nhiên",surpriseSubMix:"Lấy từ tất cả chủ đề",search:"Tìm một từ…",searchHead:"Kết quả",searchNone:"Không tìm thấy từ."},
+  vi:{back:"Danh mục",dir:"Chiều ôn tập",count:"Số thẻ",start:"Bắt đầu",reveal:"Xem đáp án",again:"Tôi sai",quit:"Thoát",knew:"Tôi đúng",clues:"Gợi ý",firstLetter:"Chữ đầu",secondLetter:"Chữ thứ hai",cluesHint:"Chỉ một đáp án đúng",redo:"Làm lại",other:"Danh mục khác",cats:"danh mục",cards:"thẻ",all:"Tất cả",enName:"Tiếng Anh",viName:"Tiếng Việt",listen:"Nghe",close:"Đóng",foot:"Đã tải tất cả danh mục. Chúc ôn tập vui!",practice:"Viết từ bằng tiếng Việt",resGood:"Đúng",resBad:"Cần ôn",retry:"Ôn lại từ sai",seeAll:"Danh sách",wordsSection:"Từ trong danh mục",st:{title:"Thống kê",empty:"Bắt đầu một bài để xem thống kê ở đây.",none:"Chưa có gì.",q1:"Mình có tiến bộ không?",q2:"Mình thạo cái gì?",q3:"Mình cần ôn gì?",progress:"Tiến độ",streak:"Chuỗi",days:"ngày",accuracy:"Độ chính xác",studyTime:"Thời gian học",days7:"7 ngày qua",today:"Hôm nay",thisWeek:"Tuần này",mastered:"Đã thạo",learning:"Đang học",review:"Cần ôn",byCategory:"Theo danh mục",reviewNow:"Ôn ngay",difficult:"Từ khó",fun:"Cho vui",wordsLearned:"Từ đã học",questions:"Số câu đã trả lời",perfect:"Phiên hoàn hảo",longest:"Chuỗi dài nhất",bestAcc:"Chính xác cao nhất",settings:"Cài đặt",voice:"Giọng / vùng miền",voiceNote:"Giọng phụ thuộc vào các giọng đã cài trên máy. iOS chỉ có giọng miền Bắc (Hà Nội); iPhone không có giọng miền Nam.",reset:"Đặt lại thống kê",resetConfirm:"Đặt lại toàn bộ thống kê? Không thể hoàn tác.",surpriseTitle:"Quiz bất ngờ",surpriseMix:"Chủ đề hỗn hợp",surpriseHint:"Đổi khi mở app và mỗi 30 phút",surpriseReroll:"Quiz khác",surpriseSubCat:"Danh mục ngẫu nhiên",surpriseSubMix:"Lấy từ tất cả chủ đề",search:"Tìm một từ…",searchHead:"Kết quả",searchNone:"Không tìm thấy từ."},
     res:[{t:"Xuất sắc !",s:"Tuyệt đối. Gọi phở nhắm mắt cũng được."},{t:"Giỏi lắm !",s:"Gần hoàn hảo. Vài từ còn mắc cỡ."},{t:"Khá !",s:"Cũng ổn. Não đang nóng máy rồi."},{t:"Cố gắng nữa nhé",s:"Ối. Ván này chữ thắng. Làm lại nhé?"}]}
 };
 function T(){ return UI[secLang] || UI.fr; }
@@ -1694,6 +1707,8 @@ function applyLang(l){
   document.querySelector('#category .back').textContent = '‹ ' + t.back;
   $("lblDir").textContent = t.dir;
   $("lblCount").textContent = t.count;
+  $("lblWords").textContent = t.wordsSection;
+  { const lb=$("listBtn"); if(lb) lb.textContent = t.seeAll; }
   document.querySelector('.start').textContent = t.start;
   $("revealBtn").textContent = t.reveal;
   document.querySelector('#gradeBox .again').textContent = t.again;
@@ -1727,6 +1742,7 @@ function setLang(l){
   if($("result").classList.contains("active")) renderResultTexts();
   if($("stats").classList.contains("active")) renderStats();
   if($("searchInput") && $("searchInput").value.trim()) doSearch();
+  if(!$("wordsModal").hidden) renderWords();
 }
 /* menu déroulant de langue */
 function toggleLangMenu(force){
@@ -1955,7 +1971,7 @@ function openCategory(id){
 function buildLens(){
   if(!state.cat) return;
   const n = state.cat.items.length;
-  const lens = [10,20,30].filter(x=>x<n);
+  const lens = [10,20,30,50,100,200].filter(x=>x<n);
   lens.push("all");
   if(lens.indexOf(state.len)===-1) state.len = "all";
   const box = $("lenBox"); box.innerHTML="";
@@ -1976,12 +1992,12 @@ function buildLens(){
 function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
 
 function weightOf(item){
+  // aléatoire dominant : tout le monde à poids égal…
+  let w = 1;
   const st = STATS.words[wordKey(item)];
-  if(!st) return 1.6;                        // jamais vu → favorisé
-  const seen=st.seen||0, wrong=st.wrong||0, knew=st.knew||0;
-  let w = 1/(1+seen) + wrong*0.8;            // peu vu → +   |   raté → revient plus souvent
-  if(knew - wrong >= 2) w *= 0.35;           // maîtrisé → moins souvent
-  return Math.max(w, 0.15);                  // plancher : tout garde une chance (reste aléatoire)
+  // …sauf un léger surpoids pour les mots souvent ratés (≥2 fois), pour les revoir
+  if(st && (st.wrong||0) >= 2) w += Math.min(st.wrong, 4) * 0.4;
+  return w;
 }
 function buildDeck(items, len){
   if(len==="all" || len>=items.length) return shuffle([...items]);
@@ -1990,6 +2006,16 @@ function buildDeck(items, len){
     .sort((a,b)=>b.key-a.key).slice(0, len).map(x=>x.it);
   return shuffle(picked);
 }
+function renderWords(){
+  if(!state.cat) return;
+  $("wmTitle").textContent = nmeta(state.cat).vi + " · " + state.cat.items.length;
+  const items = [...state.cat.items].sort((a,b)=>a.vi.localeCompare(b.vi,"vi",{sensitivity:"base"}));
+  $("wmList").innerHTML = items.map(it =>
+    '<div class="wm-row"><span class="wm-vi">'+esc(it.vi)+'</span><span class="wm-tr">'+esc(meaningOf(it))+'</span></div>'
+  ).join("");
+}
+function openWords(){ if(!state.cat) return; renderWords(); $("wordsModal").hidden=false; }
+function closeWords(){ $("wordsModal").hidden=true; }
 function startQuiz(){
   let deck = buildDeck(state.cat.items, state.len);
   state.deck = deck; state.i = 0; state.knew = 0;
@@ -2518,5 +2544,6 @@ setLang(secLang);
 </script>
 <div id="cluesToast" class="clues-toast" hidden></div>
 <div id="goodToast" class="good-toast" hidden>👍</div>
+<div id="wordsModal" class="words-modal" hidden><div class="wm-card"><div class="wm-head"><span id="wmTitle"></span><button class="wm-close" onclick="closeWords()">✕</button></div><div class="wm-list" id="wmList"></div></div></div>
 </body>
 </html>
