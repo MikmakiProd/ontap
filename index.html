@@ -325,7 +325,7 @@ h1.title .vi{color:var(--lacquer)}
     </div>
     <div id="searchResults" class="search-results" hidden></div>
     <div class="grid" id="catGrid"></div>
-    <p class="foot">© 2026 Mikmaki Interactive<br><span class="ver">v3.6</span></p>
+    <p class="foot">© 2026 Mikmaki Interactive<br><span class="ver">v3.7</span></p>
   </section>
 
   <!-- ============ CATEGORY ============ -->
@@ -2063,6 +2063,7 @@ function makeTypos(word, n){
 }
 function openClues(){
   if(!state.deck || !state.deck.length) return;
+  const tt=$("cluesToast"); if(tt && !tt.hidden) return;   // déjà affiché → ne rien faire
   const item = state.deck[state.i];
   const promptIsVi = state.dir==="vi2en";
   const answer = promptIsVi ? meaningOf(item) : item.vi;
