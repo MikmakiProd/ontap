@@ -54,7 +54,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 #category.active{display:flex;flex-direction:column;min-height:calc(100dvh - var(--safe-t) - var(--safe-b) - 62px)}
 #quiz.active{display:flex;flex-direction:column;min-height:calc(100dvh - var(--safe-t) - var(--safe-b) - 62px)}
 .quiz-foot{margin-top:auto}
-.quit-btn{align-self:center;width:auto;margin-top:14px;background:transparent;color:var(--muted);font-weight:600;font-size:15px;padding:12px 22px}
+.quit-btn{display:block;width:fit-content;margin:14px auto 0;background:transparent;color:var(--muted);font-weight:600;font-size:15px;padding:12px 22px}
 .quit-btn:active{color:var(--ink)}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.screen{animation:none}*{animation-duration:.001ms!important}}
@@ -330,7 +330,7 @@ h1.title .vi{color:var(--lacquer)}
     </div>
     <div id="searchResults" class="search-results" hidden></div>
     <div class="grid" id="catGrid"></div>
-    <p class="foot">© 2026 Mikmaki Interactive<br><span class="ver">v4.3</span></p>
+    <p class="foot">© 2026 Mikmaki Interactive<br><span class="ver">v4.4</span></p>
   </section>
 
   <!-- ============ CATEGORY ============ -->
@@ -2184,9 +2184,14 @@ function esc(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").repla
 // met à jour les étiquettes de langue de la carte en cours (changement de langue live)
 function refreshQuizLabels(){
   if(!state.deck || !state.deck.length) return;
+  const item = state.deck[state.i];
   const promptIsVi = state.dir === "vi2en";
   $("sideLabel").textContent = promptIsVi ? T().viName : T().enName;
   $("ansLabel").textContent  = !promptIsVi ? T().viName : T().enName;
+  // contenu dépendant de la langue (côté sens) : mot proposé, réponse, exemple
+  $("promptWord").textContent = promptIsVi ? item.vi : meaningOf(item);
+  $("ansWord").textContent    = promptIsVi ? meaningOf(item) : item.vi;
+  if(!$("exBox").hidden) $("exMain").textContent = exampleOf(item);
 }
 
 // (re)construit tout l'écran de résultat dans la langue courante
