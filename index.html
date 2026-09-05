@@ -275,7 +275,7 @@ h1.title .vi{color:var(--lacquer)}
 .cluesbtn{background:transparent;border:1.5px solid var(--brass);color:var(--brass);font-weight:700;border-radius:var(--r);padding:16px 14px;font-size:15px}
 .cluesbtn:active{background:rgba(176,132,47,.10)}
 .clues-pre{width:100%;margin-top:12px}
-.clues-toast{position:fixed;left:50%;bottom:150px;transform:translateX(-50%) translateY(10px);z-index:200;background:var(--card);border:1.5px solid var(--line);border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.28);padding:14px 16px;width:min(86vw,340px);opacity:0;transition:opacity .2s ease,transform .2s ease;pointer-events:none}
+.clues-toast{position:fixed;left:50%;bottom:150px;transform:translateX(-50%) translateY(10px);z-index:200;background:var(--card);border:1.5px solid var(--line);border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.28);padding:14px 16px;width:min(86vw,340px);opacity:0;transition:opacity .2s ease,transform .2s ease;pointer-events:none;cursor:pointer}
 .clues-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .ct-head{font-size:11.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.09em;margin-bottom:8px;text-align:center}
 .ct-opt{font-size:18px;font-weight:600;color:var(--ink);padding:8px 6px;border-bottom:1px solid var(--line);text-align:center}
@@ -325,7 +325,7 @@ h1.title .vi{color:var(--lacquer)}
     </div>
     <div id="searchResults" class="search-results" hidden></div>
     <div class="grid" id="catGrid"></div>
-    <p class="foot">© 2026 Mikmaki Interactive<br><span class="ver">v3.5</span></p>
+    <p class="foot">© 2026 Mikmaki Interactive<br><span class="ver">v3.6</span></p>
   </section>
 
   <!-- ============ CATEGORY ============ -->
@@ -2038,8 +2038,9 @@ function checkPractice(){
 let cluesTimer = null;
 function hideClues(){
   const t = $("cluesToast"); if(!t) return;
-  t.classList.remove("show"); t.hidden = true;
+  t.classList.remove("show"); t.hidden = true; t.style.pointerEvents="none";
   if(cluesTimer){ clearTimeout(cluesTimer); cluesTimer=null; }
+  document.removeEventListener("click", cluesOutside, true);
 }
 function stripOneAccent(w){
   for(let i=0;i<w.length;i++){
@@ -2070,9 +2071,19 @@ function openClues(){
   t.innerHTML = '<div class="ct-head">'+esc(T().cluesHint||"")+'</div>'
     + opts.map(o=>'<div class="ct-opt">'+esc(o)+'</div>').join("");
   t.hidden=false;
+  t.style.pointerEvents="auto";
+  t.onclick=hideClues;
   requestAnimationFrame(()=>t.classList.add("show"));
   if(cluesTimer) clearTimeout(cluesTimer);
   cluesTimer=setTimeout(hideClues, 5000);
+  // fermer au clic à côté (hors toast et hors bouton Clues)
+  setTimeout(()=>{ document.addEventListener("click", cluesOutside, true); }, 0);
+}
+function cluesOutside(e){
+  const t=$("cluesToast");
+  if(t && !t.hidden && !t.contains(e.target) && !(e.target.closest && e.target.closest(".cluesbtn"))){
+    hideClues();
+  }
 }
 
 function reveal(){
