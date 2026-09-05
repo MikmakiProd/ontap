@@ -275,6 +275,8 @@ h1.title .vi{color:var(--lacquer)}
 .cluesbtn{background:transparent;border:1.5px solid var(--brass);color:var(--brass);font-weight:700;border-radius:var(--r);padding:16px 14px;font-size:15px}
 .cluesbtn:active{background:rgba(176,132,47,.10)}
 .clues-pre{width:100%;margin-top:12px}
+.good-toast{position:fixed;transform:translate(-50%,-100%) scale(.9);z-index:210;font-size:26px;line-height:1;background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:6px 12px;box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:0;transition:opacity .18s ease,transform .18s ease;pointer-events:none}
+.good-toast.show{opacity:1;transform:translate(-50%,-110%) scale(1)}
 .clues-toast{position:fixed;left:50%;bottom:150px;transform:translateX(-50%) translateY(10px);z-index:200;background:var(--card);border:1.5px solid var(--line);border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.28);padding:14px 16px;width:min(86vw,340px);opacity:0;transition:opacity .2s ease,transform .2s ease;pointer-events:none;cursor:pointer}
 .clues-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .ct-head{font-size:11.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.09em;margin-bottom:8px;text-align:center}
@@ -325,7 +327,7 @@ h1.title .vi{color:var(--lacquer)}
     </div>
     <div id="searchResults" class="search-results" hidden></div>
     <div class="grid" id="catGrid"></div>
-    <p class="foot">© 2026 Mikmaki Interactive<br><span class="ver">v3.7</span></p>
+    <p class="foot">© 2026 Mikmaki Interactive<br><span class="ver">v3.8</span></p>
   </section>
 
   <!-- ============ CATEGORY ============ -->
@@ -1995,7 +1997,7 @@ function renderCard(){
   $("answerBox").hidden = true;
   $("revealBtn").hidden = false;
   $("gradeBox").hidden = true;
-  { const cp=$("cluesPre"); if(cp) cp.hidden=false; hideClues(); }
+  { const cp=$("cluesPre"); if(cp) cp.hidden=false; hideClues(); hideGood(); }
 
   // champ d'entraînement : on écrit toujours le mot vietnamien
   state.ansVariants = buildVariants(item.vi);
@@ -2026,12 +2028,28 @@ function checkPractice(){
   if(exact){
     mark.hidden=false; mark.textContent="✓"; mark.classList.add("ok"); mark.classList.remove("no");
     inp.classList.add("ok"); inp.classList.remove("no");
+    if(!state.revealed){ reveal(); requestAnimationFrame(showGood); }
   } else if(onTrack){
     mark.hidden=true; inp.classList.remove("ok","no");
   } else {
     mark.hidden=false; mark.textContent="✗"; mark.classList.add("no"); mark.classList.remove("ok");
     inp.classList.add("no"); inp.classList.remove("ok");
   }
+}
+
+/* ---- 👍 quand le mot est écrit correctement ---- */
+let goodTimer = null;
+function hideGood(){ const g=$("goodToast"); if(g){ g.classList.remove("show"); g.hidden=true; } if(goodTimer){ clearTimeout(goodTimer); goodTimer=null; } }
+function showGood(){
+  const w=$("ansWord"), g=$("goodToast"); if(!w||!g) return;
+  const r=w.getBoundingClientRect();
+  if(!r.width && !r.height) return;
+  g.style.left=(r.left + r.width/2)+"px";
+  g.style.top=(r.top - 6)+"px";
+  g.hidden=false;
+  requestAnimationFrame(()=>g.classList.add("show"));
+  if(goodTimer) clearTimeout(goodTimer);
+  goodTimer=setTimeout(hideGood, 1500);
 }
 
 /* ---- Clues : indices avec 5 propositions (une seule juste) ---- */
@@ -2458,5 +2476,6 @@ setLang(secLang);
 }catch(e){} })();
 </script>
 <div id="cluesToast" class="clues-toast" hidden></div>
+<div id="goodToast" class="good-toast" hidden>👍</div>
 </body>
 </html>
