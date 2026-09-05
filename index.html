@@ -183,7 +183,7 @@ h1.title .vi{color:var(--lacquer)}
   border-radius:var(--r);padding:17px;transition:transform .15s ease;
 }
 .reveal-btn:active{transform:scale(.98)}
-.grade{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;margin-top:26px;align-items:stretch}
+.grade{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:26px}
 .grade button{border-radius:var(--r);padding:16px;font-weight:700;font-size:16px;transition:transform .15s ease}
 .grade button:active{transform:scale(.97)}
 .grade .again{background:rgba(163,39,31,.12);color:var(--lacquer)}
@@ -325,7 +325,7 @@ h1.title .vi{color:var(--lacquer)}
     </div>
     <div id="searchResults" class="search-results" hidden></div>
     <div class="grid" id="catGrid"></div>
-    <p class="foot">© 2026 Mikmaki Interactive<br><span class="ver">v3.4</span></p>
+    <p class="foot">© 2026 Mikmaki Interactive<br><span class="ver">v3.5</span></p>
   </section>
 
   <!-- ============ CATEGORY ============ -->
@@ -395,7 +395,6 @@ h1.title .vi{color:var(--lacquer)}
       <button class="cluesbtn clues-pre" id="cluesPre" onclick="openClues()">Clues</button>
       <div class="grade" id="gradeBox" hidden>
         <button class="again" onclick="grade(false)">I was wrong</button>
-        <button class="cluesbtn" onclick="openClues()">Clues</button>
         <button class="knew" onclick="grade(true)">I was right</button>
       </div>
       <button class="quit-btn" id="quitBtn" onclick="go('category')">Quitter le quiz</button>
@@ -2100,7 +2099,7 @@ function reveal(){
 
   $("answerBox").hidden = false;
   $("revealBtn").hidden = true;
-  { const cp=$("cluesPre"); if(cp) cp.hidden=true; }
+  { const cp=$("cluesPre"); if(cp) cp.hidden=true; } hideClues();
   $("gradeBox").hidden = false;
 }
 
