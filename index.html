@@ -294,6 +294,10 @@ h1.title .vi{color:var(--lacquer)}
 .wm-close{width:34px;height:34px;border-radius:50%;background:var(--card);border:1px solid var(--line);color:var(--ink);font-size:16px;flex:none}
 .wm-list{overflow-y:auto;padding:6px 18px 24px}
 .wm-row{display:flex;justify-content:space-between;gap:16px;padding:11px 2px;border-bottom:1px solid var(--line)}
+.wm-ex{padding:9px 2px;border-bottom:1px solid var(--line)}
+.wm-ex-vi{font-weight:700;color:var(--ink);line-height:1.35}
+.wm-ex-tr{color:var(--muted);font-size:14.5px;margin-top:3px;line-height:1.35}
+.wm-noex{color:var(--muted);padding:12px 2px}
 .wm-vi{font-weight:700;color:var(--ink)}
 .wm-tr{color:var(--muted);text-align:right}
 .foot{text-align:center;color:var(--muted);font-size:12.5px;font-weight:500;margin-top:34px;opacity:.8}
@@ -1799,7 +1803,7 @@ function setLang(l){
   if($("result").classList.contains("active")) renderResultTexts();
   if($("stats").classList.contains("active")) renderStats();
   if($("searchInput") && $("searchInput").value.trim()) doSearch();
-  if(!$("wordsModal").hidden) renderWords();
+  if(!$("wordsModal").hidden){ if(curWordItem) showWordDetail(curWordItem); else renderWords(); }
 }
 /* menu déroulant de langue */
 function toggleLangMenu(force){
@@ -1847,6 +1851,18 @@ const EX_MEANINGS = { fr: {"How do you go to Hanoi?":"Comment vas-tu à Hanoï ?
 function exampleOf(item){ const t=EX_MEANINGS[secLang]; if(t && item.exEn && t[item.exEn]) return t[item.exEn]; return item.exEn || item.exVi || ""; }
 function exTr(en, vi){ const t=EX_MEANINGS[secLang]; if(t && en && t[en]) return t[en]; return en || vi || ""; }
 function examplesOf(item){ const a=[]; if(item.exVi || item.exEn){ a.push({vi:item.exVi||"", tr: exampleOf(item)}); } if(Array.isArray(item.exs)){ for(const e of item.exs){ a.push({vi:e.vi||"", tr: exTr(e.en, e.vi)}); } } return a; }
+function cap(s){ return (s && typeof s==="string") ? s.charAt(0).toUpperCase()+s.slice(1) : s; }
+function renderExamples(item){
+  const box=$("exBox"); if(!box) return;
+  const exs=examplesOf(item);
+  if(exs.length){
+    box.hidden=false;
+    box.innerHTML = exs.map(function(e){
+      const showTag = !!(e.vi && e.tr && e.vi!==e.tr);
+      return '<div class="ex-row"><div class="ex-main">'+esc(cap(e.tr||e.vi))+'</div>'+(showTag?'<div class="ex-tag">'+esc(cap(e.vi))+'</div>':'')+'</div>';
+    }).join('');
+  } else { box.hidden=true; }
+}
 function meaningOf(item){ const t=MEANINGS[secLang]; return (t && t[item.en]) || item.en; }
 function noAccent(s){ return (s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/đ/g,"d").replace(/Đ/g,"D"); }
 function nrm(s){ return noAccent((s||"").toLowerCase()).replace(/\s+/g," ").trim(); }
@@ -1892,6 +1908,7 @@ function scoreItem(q, it){
   }
   return best;
 }
+let searchResultItems=[]; let curWordItem=null;
 function doSearch(){
   const raw=$("searchInput").value, q=nrm(raw), res=$("searchResults");
   $("searchClear").hidden = !raw;
@@ -1905,11 +1922,12 @@ function doSearch(){
     res.innerHTML='<div class="sr-head"><span>'+esc(T().st.searchHead)+'</span>'+dir+'</div><p class="sr-empty">'+esc(T().st.searchNone)+'</p>';
     return;
   }
-  const rows=scored.map(x=>{
+  searchResultItems = scored.map(x=>x.it);
+  const rows=scored.map((x,ri)=>{
     const it=x.it, nm=CATNAMES[it.cat], catnm=nm?(nm[secLang]||nm.vi):it.cat;
     const mean=meaningOf(it);
     const primary=inv?mean:it.vi, secondary=inv?it.vi:mean;
-    return '<button class="sr-row" onclick="openCategory(\''+it.cat+'\')">'
+    return '<button class="sr-row" onclick="showSearchWord('+ri+')">'
       +'<span class="sr-vi">'+esc(primary)+'</span>'
       +'<span class="sr-en">'+esc(secondary)+'</span>'
       +'<span class="sr-cat">'+esc(catnm)+'</span></button>';
@@ -2065,7 +2083,22 @@ function buildDeck(items, len){
     .sort((a,b)=>b.key-a.key).slice(0, len).map(x=>x.it);
   return shuffle(picked);
 }
-function renderWords(){
+function showSearchWord(i){ const it=searchResultItems[i]; if(it) showWordDetail(it); }
+function showWordDetail(item){
+  curWordItem=item;
+  $("wmTitle").textContent = cap(item.vi) + (secLang!=="vi" ? "  ·  " + meaningOf(item) : "");
+  const exs=examplesOf(item);
+  let html;
+  if(exs.length){
+    html = exs.map(function(e){
+      const showTag = !!(e.vi && e.tr && e.vi!==e.tr);
+      return '<div class="wm-ex"><div class="wm-ex-vi">'+esc(cap(e.vi||e.tr))+'</div>'+(showTag?'<div class="wm-ex-tr">'+esc(cap(e.tr))+'</div>':'')+'</div>';
+    }).join('');
+  } else { html='<p class="wm-noex">—</p>'; }
+  $("wmList").innerHTML = html;
+  $("wordsModal").hidden=false;
+}
+function renderWords(){ curWordItem=null;
   if(!state.cat) return;
   $("wmTitle").textContent = nmeta(state.cat).vi + " · " + state.cat.items.length;
   const items = [...state.cat.items].sort((a,b)=>a.vi.localeCompare(b.vi,"vi",{sensitivity:"base"}));
@@ -2074,7 +2107,7 @@ function renderWords(){
   ).join("");
 }
 function openWords(){ if(!state.cat) return; renderWords(); $("wordsModal").hidden=false; }
-function closeWords(){ $("wordsModal").hidden=true; }
+function closeWords(){ $("wordsModal").hidden=true; curWordItem=null; }
 function startQuiz(){
   let deck = buildDeck(state.cat.items, state.len);
   state.deck = deck; state.i = 0; state.knew = 0;
@@ -2231,15 +2264,7 @@ function reveal(){
   $("ansWord").className = "word" + (ansIsVi?" vi":"");
   $("ansSpeak").hidden = !ansIsVi;
 
-  { const exs = examplesOf(item);
-    if(exs.length){
-      $("exBox").hidden = false;
-      $("exBox").innerHTML = exs.map(function(e){
-        const showTag = !!(e.vi && e.tr && e.vi!==e.tr);
-        return '<div class="ex-row"><div class="ex-main">'+esc(e.tr||e.vi)+'</div>'+(showTag?'<div class="ex-tag">'+esc(e.vi)+'</div>':'')+'</div>';
-      }).join('');
-    } else { $("exBox").hidden = true; }
-  }
+  renderExamples(item);
 
   $("answerBox").hidden = false;
   $("revealBtn").hidden = true;
@@ -2276,7 +2301,7 @@ function refreshQuizLabels(){
   // contenu dépendant de la langue (côté sens) : mot proposé, réponse, exemple
   $("promptWord").textContent = promptIsVi ? item.vi : meaningOf(item);
   $("ansWord").textContent    = promptIsVi ? meaningOf(item) : item.vi;
-  if(!$("exBox").hidden) $("exMain").textContent = exampleOf(item);
+  if(state.revealed) renderExamples(item);
 }
 
 // (re)construit tout l'écran de résultat dans la langue courante
