@@ -1803,7 +1803,7 @@ function setLang(l){
   if($("result").classList.contains("active")) renderResultTexts();
   if($("stats").classList.contains("active")) renderStats();
   if($("searchInput") && $("searchInput").value.trim()) doSearch();
-  if(!$("wordsModal").hidden){ if(curWordItem) showWordDetail(curWordItem); else renderWords(); }
+  { const wm=$("wordsModal"); if(wm && !wm.hidden){ if(curWordItem) showWordDetail(curWordItem); else renderWords(); } }
 }
 /* menu déroulant de langue */
 function toggleLangMenu(force){
@@ -1872,7 +1872,7 @@ function searchIndex(){
   CATEGORIES.forEach(c=>c.items.forEach(it=>{
     const key=it.vi+"|"+it.en;
     if(seen.has(key)) return; seen.add(key);
-    out.push({vi:it.vi, en:it.en, cat:c.id, nv:nrm(it.vi), ne:nrm(it.en)});
+    out.push({vi:it.vi, en:it.en, cat:c.id, nv:nrm(it.vi), ne:nrm(it.en), exVi:it.exVi, exEn:it.exEn, exs:it.exs});
   }));
   SEARCH_INDEX=out; return out;
 }
