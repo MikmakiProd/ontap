@@ -112,12 +112,12 @@ h1.title .vi{color:var(--lacquer)}
 .detail-head p{color:var(--muted);font-weight:500;margin:4px 0 0}
 .section-label{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--brass);margin:28px 0 12px}
 .dirswap{
-  width:100%;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;
+  width:100%;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;
   background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);
   padding:20px 18px;box-shadow:var(--shadow);transition:transform .12s ease;
 }
 .dirswap:active{transform:scale(.98)}
-.dirswap .lg{font-size:clamp(22px,6vw,26px);font-weight:800;letter-spacing:-.01em;color:var(--ink);white-space:nowrap}
+.dirswap .lg{font-size:clamp(15px,4.6vw,21px);font-weight:800;letter-spacing:-.01em;color:var(--ink);white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
 .dirswap #dirFrom{text-align:right}
 .dirswap #dirTo{text-align:left}
 .dirswap .swap{justify-self:center;flex:none;width:42px;height:42px;border-radius:50%;background:var(--brass);color:#fff;display:flex;align-items:center;justify-content:center}
@@ -2470,10 +2470,12 @@ function normWord(s){ return (s||"").toLowerCase().trim().replace(/\s+/g," "); }
 function buildVariants(s){
   const out = new Set();
   s.split("/").forEach(part=>{
-    const p = normWord(part);
-    if(p) out.add(p);
+    // contenu entre parenthèses ignoré (ex. "Cô (giáo)" -> "cô")
     const noParen = normWord(part.replace(/\([^)]*\)/g," "));
     if(noParen) out.add(noParen);
+    // parenthèses retirées mais contenu gardé (ex. "cô giáo")
+    const keepInner = normWord(part.replace(/[()]/g," "));
+    if(keepInner) out.add(keepInner);
   });
   return [...out];
 }
