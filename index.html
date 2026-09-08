@@ -298,6 +298,11 @@ h1.title .vi{color:var(--lacquer)}
 .wm-ex-vi{font-weight:700;color:var(--ink);line-height:1.35}
 .wm-ex-tr{color:var(--muted);font-size:14.5px;margin-top:3px;line-height:1.35}
 .wm-noex{color:var(--muted);padding:12px 2px}
+.wm-rowbtn{width:100%;background:none;border:0;border-bottom:1px solid var(--line);cursor:pointer;font:inherit;color:inherit;align-items:center;justify-content:flex-start}
+.wm-rowbtn .wm-tr{margin-left:auto;text-align:right;padding-left:12px}
+.wm-rowbtn .wm-chev{flex:0 0 auto;color:var(--muted);font-size:18px;margin-left:10px}
+.wm-rowbtn:active{background:rgba(0,0,0,.05)}
+.wm-back{background:none;border:0;color:inherit;font-size:24px;line-height:1;cursor:pointer;padding:0 10px 0 0;vertical-align:middle}
 .wm-vi{font-weight:700;color:var(--ink)}
 .wm-tr{color:var(--muted);text-align:right}
 .foot{text-align:center;color:var(--muted);font-size:12.5px;font-weight:500;margin-top:34px;opacity:.8}
@@ -2114,7 +2119,7 @@ function setLang(l){
   if($("result").classList.contains("active")) renderResultTexts();
   if($("stats").classList.contains("active")) renderStats();
   if($("searchInput") && $("searchInput").value.trim()) doSearch();
-  { const wm=$("wordsModal"); if(wm && !wm.hidden){ if(curWordItem) showWordDetail(curWordItem); else renderWords(); } }
+  { const wm=$("wordsModal"); if(wm && !wm.hidden){ if(curWordItem) showWordDetail(curWordItem, curWordFromList); else renderWords(); } }
 }
 /* menu déroulant de langue */
 function toggleLangMenu(force){
@@ -2219,7 +2224,7 @@ function scoreItem(q, it){
   }
   return best;
 }
-let searchResultItems=[]; let curWordItem=null;
+let searchResultItems=[]; let curWordItem=null; let wordListItems=[]; let curWordFromList=false;
 function doSearch(){
   const raw=$("searchInput").value, q=nrm(raw), res=$("searchResults");
   $("searchClear").hidden = !raw;
@@ -2395,9 +2400,10 @@ function buildDeck(items, len){
   return shuffle(picked);
 }
 function showSearchWord(i){ const it=searchResultItems[i]; if(it) showWordDetail(it); }
-function showWordDetail(item){
-  curWordItem=item;
-  $("wmTitle").textContent = cap(item.vi) + (secLang!=="vi" ? "  ·  " + meaningOf(item) : "");
+function showWordDetail(item, fromList){
+  curWordItem=item; curWordFromList=!!fromList;
+  const wmt = cap(item.vi) + (secLang!=="vi" ? "  ·  " + meaningOf(item) : "");
+  $("wmTitle").innerHTML = (fromList ? '<button class="wm-back" onclick="backToList()" aria-label="Retour">\u2039</button>' : '') + '<span>'+esc(wmt)+'</span>';
   const exs=examplesOf(item);
   let html;
   if(exs.length){
@@ -2409,14 +2415,17 @@ function showWordDetail(item){
   $("wmList").innerHTML = html;
   $("wordsModal").hidden=false;
 }
-function renderWords(){ curWordItem=null;
+function renderWords(){ curWordItem=null; curWordFromList=false;
   if(!state.cat) return;
   $("wmTitle").textContent = nmeta(state.cat).vi + " · " + state.cat.items.length;
   const items = [...state.cat.items].sort((a,b)=>a.vi.localeCompare(b.vi,"vi",{sensitivity:"base"}));
-  $("wmList").innerHTML = items.map(it =>
-    '<div class="wm-row"><span class="wm-vi">'+esc(it.vi)+'</span><span class="wm-tr">'+esc(meaningOf(it))+'</span></div>'
+  wordListItems = items;
+  $("wmList").innerHTML = items.map((it,idx) =>
+    '<button class="wm-row wm-rowbtn" onclick="showCatWord('+idx+')"><span class="wm-vi">'+esc(it.vi)+'</span><span class="wm-tr">'+esc(meaningOf(it))+'</span><span class="wm-chev">\u203a</span></button>'
   ).join("");
 }
+function showCatWord(idx){ const it=wordListItems[idx]; if(it) showWordDetail(it, true); }
+function backToList(){ renderWords(); }
 function openWords(){ if(!state.cat) return; renderWords(); $("wordsModal").hidden=false; }
 function closeWords(){ $("wordsModal").hidden=true; curWordItem=null; }
 function startQuiz(){
