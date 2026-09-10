@@ -54,7 +54,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 #category.active{display:flex;flex-direction:column;min-height:calc(100dvh - var(--safe-t) - var(--safe-b) - 62px)}
 #quiz.active{display:flex;flex-direction:column;min-height:calc(100dvh - var(--safe-t) - var(--safe-b) - 62px)}
 .quiz-foot{margin-top:auto}
-.quit-btn{display:block;width:fit-content;margin:14px auto 0;background:transparent;color:var(--muted);font-weight:600;font-size:15px;padding:12px 22px}
+.quit-btn{display:block;width:fit-content;margin:14px auto 18px;background:transparent;color:var(--muted);font-weight:600;font-size:15px;padding:12px 22px}
 .quit-btn:active{color:var(--ink)}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.screen{animation:none}*{animation-duration:.001ms!important}}
@@ -279,7 +279,7 @@ h1.title .vi{color:var(--lacquer)}
 .cluesbtn.c-listen{display:flex;align-items:center;justify-content:center;padding:8px 3px}
 .cluesbtn.c-listen svg{width:20px;height:20px}
 .cluesbtn.c-listen.playing{animation:pulse 1s ease infinite}
-.cluesbtn{background:transparent;border:1.5px solid var(--brass);color:var(--brass);font-weight:700;border-radius:var(--r);padding:12px 3px;font-size:12px}
+.cluesbtn{background:transparent;border:1.5px solid var(--brass);color:var(--brass);font-weight:700;border-radius:var(--r);padding:11px 2px;font-size:10.5px;white-space:nowrap}
 .cluesbtn:active{background:rgba(176,132,47,.10)}
 .clues-pre{width:100%;margin-top:12px}
 .good-toast{position:fixed;transform:translate(-50%,-100%) scale(.9);z-index:210;font-size:26px;line-height:1;background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:6px 12px;box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:0;transition:opacity .18s ease,transform .18s ease;pointer-events:none}
@@ -2106,7 +2106,7 @@ function applyLang(l){
   document.querySelectorAll(".c-second").forEach(b=>b.textContent = t.secondLetter);
   document.querySelectorAll(".c-third").forEach(b=>b.textContent = t.thirdLetter);
   document.querySelectorAll(".c-clues").forEach(b=>b.textContent = t.clues);
-  $("quitBtn").textContent = t.quit;
+  $("quitBtn").textContent = "× " + t.quit;
   { const rr=document.querySelector('#result .redo'); if(rr) rr.textContent = t.redo; }
   { const ro=document.querySelector('#result .other'); if(ro) ro.textContent = t.other; }
   document.querySelector('.qclose').setAttribute('aria-label', t.close);
