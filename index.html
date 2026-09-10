@@ -275,7 +275,10 @@ h1.title .vi{color:var(--lacquer)}
 .sr-en{font-size:14px;color:var(--muted);flex:1;min-width:0}
 .sr-cat{font-size:11px;font-weight:700;color:var(--brass);letter-spacing:.02em;white-space:nowrap;flex:none}
 .sr-empty{color:var(--muted);font-size:14px;padding:12px 4px}
-.clue-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px}
+.clue-row{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:12px}
+.cluesbtn.c-listen{display:flex;align-items:center;justify-content:center;padding:8px 3px}
+.cluesbtn.c-listen svg{width:20px;height:20px}
+.cluesbtn.c-listen.playing{animation:pulse 1s ease infinite}
 .cluesbtn{background:transparent;border:1.5px solid var(--brass);color:var(--brass);font-weight:700;border-radius:var(--r);padding:12px 3px;font-size:12px}
 .cluesbtn:active{background:rgba(176,132,47,.10)}
 .clues-pre{width:100%;margin-top:12px}
@@ -425,7 +428,7 @@ h1.title .vi{color:var(--lacquer)}
 
     <div class="quiz-foot">
       <button class="reveal-btn" id="revealBtn" onclick="reveal()">Voir la réponse</button>
-      <div class="clue-row" id="cluesPre"><button class="cluesbtn c-first" onclick="letterHint(1)">First letter</button><button class="cluesbtn c-second" onclick="letterHint(2)">Second letter</button><button class="cluesbtn c-third" onclick="letterHint(3)">3 letters</button><button class="cluesbtn c-clues" onclick="openClues()">Clues</button></div>
+      <div class="clue-row" id="cluesPre"><button class="cluesbtn c-first" onclick="letterHint(1)">First letter</button><button class="cluesbtn c-second" onclick="letterHint(2)">Second letter</button><button class="cluesbtn c-third" onclick="letterHint(3)">3 letters</button><button class="cluesbtn c-clues" onclick="openClues()">Clues</button><button class="cluesbtn c-listen" onclick="speakClueVi(this)" aria-label="Écouter"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 3.5a1 1 0 0 0-1.7-.7L6.6 7.5H3.5A1.5 1.5 0 0 0 2 9v6a1.5 1.5 0 0 0 1.5 1.5h3.1l4.7 4.7A1 1 0 0 0 13 20.5v-17Zm3.9 3.1a1 1 0 0 0-.15 1.4 6 6 0 0 1 0 8 1 1 0 1 0 1.55 1.26 8 8 0 0 0 0-10.52 1 1 0 0 0-1.4-.14Zm2.9-2.6a1 1 0 1 0-1.4 1.42 9.98 9.98 0 0 1 0 13.16 1 1 0 0 0 1.4 1.42 11.98 11.98 0 0 0 0-16Z"/></svg></button></div>
       <div class="grade" id="gradeBox" hidden>
         <button class="again" onclick="grade(false)">I was wrong</button>
         <button class="knew" onclick="grade(true)">I was right</button>
@@ -2932,6 +2935,16 @@ function speakCurrent(which){
   u.onstart = ()=>btn.classList.add("playing");
   u.onend = ()=>btn.classList.remove("playing");
   u.onerror = ()=>btn.classList.remove("playing");
+  try{ speechSynthesis.speak(u); }catch(e){}
+}
+function speakClueVi(btn){
+  if(!window.speechSynthesis){ return; }
+  const item = state.deck[state.i]; if(!item) return;
+  stopSpeak();
+  const u = new SpeechSynthesisUtterance(cleanForSpeech(item.vi));
+  u.lang = "vi-VN"; u.rate = .85; u.pitch = 1;
+  if(viVoice) u.voice = viVoice;
+  if(btn){ u.onstart=()=>btn.classList.add("playing"); u.onend=()=>btn.classList.remove("playing"); u.onerror=()=>btn.classList.remove("playing"); }
   try{ speechSynthesis.speak(u); }catch(e){}
 }
 
