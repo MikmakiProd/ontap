@@ -161,6 +161,9 @@ h1.title .vi{color:var(--lacquer)}
 .practice-mark{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-weight:800;font-size:20px;line-height:1}
 .practice-mark.ok{color:var(--brass)}
 .practice-mark.no{color:var(--lacquer)}
+.accent-bar{position:absolute;left:0;right:0;bottom:calc(100% + 10px);z-index:200;background:var(--card);border:1.5px solid var(--line);border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.28);padding:12px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.accent-chip{flex:0 0 auto;min-width:42px;height:46px;border:1.5px solid var(--brass);background:var(--card);color:var(--ink);border-radius:10px;font-size:23px;font-weight:700;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0 4px}
+.accent-chip:active{background:var(--brass);color:#fff}
 .word{font-size:clamp(30px,9vw,46px);font-weight:800;letter-spacing:-.02em;line-height:1.1;word-break:break-word}
 .word.vi{color:var(--jade)}
 .word-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
@@ -425,6 +428,7 @@ h1.title .vi{color:var(--lacquer)}
     </div>
 
     <div class="practice">
+      <div id="accentBar" class="accent-bar" hidden></div>
       <input id="practiceInput" class="practice-in" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Écris le mot en vietnamien">
       <span class="practice-mark" id="practiceMark" hidden></span>
     </div>
@@ -2490,10 +2494,46 @@ function renderCard(){
   const pin = $("practiceInput");
   pin.value = ""; pin.classList.remove("ok","no");
   $("practiceMark").hidden = true;
+  { const ab=$("accentBar"); if(ab){ ab.hidden=true; ab.innerHTML=""; } }
 }
 
 /* ---- entraînement à l'écriture ---- */
 function normWord(s){ return (s||"").toLowerCase().trim().replace(/\s+/g," "); }
+const VAR_GROUPS = {
+  a:"aàáảãạăằắẳẵặâầấẩẫậ",
+  e:"eèéẻẽẹêềếểễệ",
+  i:"iìíỉĩị",
+  o:"oòóỏõọôồốổỗộơờớởỡợ",
+  u:"uùúủũụưừứửữự",
+  y:"yỳýỷỹỵ",
+  d:"dđ"
+};
+const BASE_OF = {};
+for(const k in VAR_GROUPS){ for(const ch of VAR_GROUPS[k]) BASE_OF[ch]=k; }
+function updateAccentBar(){
+  const bar=$("accentBar"), inp=$("practiceInput");
+  if(!bar||!inp) return;
+  const pos = inp.selectionStart||0;
+  const ch = pos>0 ? inp.value[pos-1] : "";
+  const base = ch ? BASE_OF[ch.toLowerCase()] : null;
+  if(!base){ bar.hidden=true; bar.innerHTML=""; return; }
+  const isUp = ch===ch.toUpperCase() && ch!==ch.toLowerCase();
+  bar.innerHTML = VAR_GROUPS[base].split("").map(function(c){
+    const cc = isUp ? c.toUpperCase() : c;
+    return '<button type="button" class="accent-chip" onmousedown="event.preventDefault()" onclick="applyAccent(\''+cc+'\')">'+cc+'</button>';
+  }).join("");
+  bar.hidden=false;
+}
+function applyAccent(ch){
+  const inp=$("practiceInput"); if(!inp) return;
+  const pos=inp.selectionStart||0; if(pos<1) return;
+  const v=inp.value;
+  inp.value = v.slice(0,pos-1) + ch + v.slice(pos);
+  inp.setSelectionRange(pos,pos);
+  inp.focus();
+  updateAccentBar();
+  checkPractice();
+}
 function buildVariants(s){
   const out = new Set();
   s.split("/").forEach(part=>{
@@ -2960,7 +3000,8 @@ document.addEventListener("keydown", e=>{
   else if(state.revealed && (e.key==="1")) grade(false);
   else if(state.revealed && (e.key==="2")) grade(true);
 });
-$("practiceInput").addEventListener("input", checkPractice);
+$("practiceInput").addEventListener("input", function(){ checkPractice(); updateAccentBar(); });
+["keyup","click","focus"].forEach(ev=>$("practiceInput").addEventListener(ev, updateAccentBar));
 
 $("searchInput").addEventListener("input", doSearch);
 $("searchClear").onclick = ()=>{ $("searchInput").value=""; doSearch(); $("searchInput").focus(); };
