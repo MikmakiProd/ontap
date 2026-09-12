@@ -2513,6 +2513,7 @@ for(const k in VAR_GROUPS){ for(const ch of VAR_GROUPS[k]) BASE_OF[ch]=k; }
 function updateAccentBar(){
   const bar=$("accentBar"), inp=$("practiceInput");
   if(!bar||!inp) return;
+  if((state.ansVariants||[]).indexOf(normWord(inp.value))>=0){ bar.hidden=true; bar.innerHTML=""; return; }
   const pos = inp.selectionStart||0;
   const ch = pos>0 ? inp.value[pos-1] : "";
   const base = ch ? BASE_OF[ch.toLowerCase()] : null;
