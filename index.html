@@ -152,10 +152,11 @@ h1.title .vi{color:var(--lacquer)}
 .side-label{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 .prompt-zone{flex:1;display:flex;flex-direction:column;justify-content:center;padding:18px 0}
 .practice{position:relative;margin-top:20px}
-.practice-in{width:100%;border:1.5px solid var(--line);border-radius:12px;background:var(--paper);padding:12px 44px 12px 15px;font-family:inherit;font-size:17px;font-weight:600;color:var(--ink)}
-.practice-in,.search-in,.lock-in{color-scheme:light;-webkit-text-fill-color:var(--ink)}
-.practice-in::placeholder{color:var(--muted);font-weight:500;opacity:.7}
-.practice-in:focus{outline:none;border-color:var(--ink)}
+.practice-in{width:100%;border:1.5px solid #3a463f;border-radius:12px;background:var(--ink);padding:12px 44px 12px 15px;font-family:inherit;font-size:17px;font-weight:600;color:#fbf7ec;color-scheme:dark}
+.search-in,.lock-in{color-scheme:light;-webkit-text-fill-color:var(--ink)}
+.practice-in{-webkit-text-fill-color:#fbf7ec}
+.practice-in::placeholder{color:#fbf7ec;font-weight:500;opacity:.5}
+.practice-in:focus{outline:none;border-color:var(--brass)}
 .practice-in.ok{border-color:var(--brass);background:rgba(176,132,47,.10)}
 .practice-in.no{border-color:var(--lacquer);background:rgba(163,39,31,.07)}
 .practice-mark{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-weight:800;font-size:20px;line-height:1}
