@@ -291,7 +291,7 @@ h1.title .vi{color:var(--lacquer)}
 .good-toast{position:fixed;transform:translate(-50%,-100%) scale(.9);z-index:210;font-size:26px;line-height:1;background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:6px 12px;box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:0;transition:opacity .18s ease,transform .18s ease;pointer-events:none}
 .good-toast.show{opacity:1;transform:translate(-50%,-110%) scale(1)}
 .clues-toast{position:fixed;left:50%;bottom:150px;transform:translateX(-50%) translateY(10px);z-index:200;background:var(--card);border:1.5px solid var(--line);border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.28);padding:14px 16px;width:min(86vw,340px);opacity:0;transition:opacity .2s ease,transform .2s ease;pointer-events:none;cursor:pointer}
-.install-toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 16px);transform:translateX(-50%) translateY(14px);z-index:400;background:#17211d;color:#fbf7ec;border-radius:16px;box-shadow:0 14px 44px rgba(0,0,0,.45);padding:11px 12px 11px 14px;width:min(94vw,430px);display:flex;align-items:center;gap:10px;opacity:0;transition:opacity .25s ease,transform .25s ease}
+.install-toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 16px);transform:translateX(-50%) translateY(14px);z-index:400;background:#17211d;color:#fbf7ec;border-radius:16px;box-shadow:0 4px 14px rgba(0,0,0,.22);padding:11px 12px 11px 14px;width:min(94vw,430px);display:flex;align-items:center;gap:10px;opacity:0;transition:opacity .25s ease,transform .25s ease}
 .install-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .install-toast .it-icon{flex:0 0 auto;line-height:0;color:#fbf7ec}
 .install-toast .it-icon svg{width:22px;height:22px;display:block}
@@ -3054,7 +3054,7 @@ setLang(secLang);
   var isAndroid=/android/i.test(ua);
   var isStandalone=(window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)||navigator.standalone===true;
   var installed=false; try{installed=localStorage.getItem("ontap_installed")==="1";}catch(e){}
-  var dstate=""; try{dstate=localStorage.getItem("ontap_install_state")||"";}catch(e){}
+  var dclicks=0; try{dclicks=parseInt(localStorage.getItem("ontap_install_dclicks")||"0",10)||0;}catch(e){}
   var deferred=null;
   var TXT={
     fr:{title:"Ajouter \u00e0 l'\u00e9cran d'accueil",ios:"Touche Partager, puis \u00ab Sur l'\u00e9cran d'accueil \u00bb.",android:"Touche le menu (\u22ee), puis \u00ab Ajouter \u00e0 l'\u00e9cran d'accueil \u00bb.",button:"Installer"},
@@ -3075,10 +3075,9 @@ setLang(secLang);
     else { desc.style.display=""; desc.textContent=isIOS?t.ios:t.android; icon.innerHTML=isIOS?SVG_SHARE:SVG_MENU; btn.hidden=true; }
   }
   window.__refreshInstallToast=function(){ if(box&&!box.hidden) render(); };
-  window.dismissInstall=function(fromX){ window.__installDismissed=true; if(fromX && dstate===""){ dstate="grace"; try{localStorage.setItem("ontap_install_state","grace");}catch(e){} } box.classList.remove("show"); setTimeout(function(){box.hidden=true;},250); };
+  window.dismissInstall=function(fromX){ window.__installDismissed=true; if(fromX){ dclicks++; try{localStorage.setItem("ontap_install_dclicks",String(dclicks));}catch(e){} } box.classList.remove("show"); setTimeout(function(){box.hidden=true;},250); };
   function show(){
-    if(isStandalone||installed||dstate==="done"||window.__installDismissed||!(isIOS||isAndroid)) return;
-    if(dstate==="grace"){ dstate="done"; try{localStorage.setItem("ontap_install_state","done");}catch(e){} }
+    if(isStandalone||installed||dclicks>=2||window.__installDismissed||!(isIOS||isAndroid)) return;
     render(); box.hidden=false; requestAnimationFrame(function(){box.classList.add("show");});
   }
   window.addEventListener("beforeinstallprompt",function(e){ e.preventDefault(); deferred=e; if(!box.hidden) render(); });
