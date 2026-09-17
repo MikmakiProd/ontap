@@ -3044,7 +3044,7 @@ setLang(secLang);
   <span class="it-icon"></span>
   <div class="it-text"><div class="it-title"></div><div class="it-desc"></div></div>
   <button id="itInstall" class="it-install" hidden></button>
-  <button class="it-close" onclick="dismissInstall()" aria-label="Fermer">✕</button>
+  <button class="it-close" onclick="dismissInstall(true)" aria-label="Fermer">✕</button>
 </div>
 <script>
 (function(){
@@ -3054,6 +3054,7 @@ setLang(secLang);
   var isAndroid=/android/i.test(ua);
   var isStandalone=(window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)||navigator.standalone===true;
   var installed=false; try{installed=localStorage.getItem("ontap_installed")==="1";}catch(e){}
+  var dstate=""; try{dstate=localStorage.getItem("ontap_install_state")||"";}catch(e){}
   var deferred=null;
   var TXT={
     fr:{title:"Ajouter \u00e0 l'\u00e9cran d'accueil",ios:"Touche Partager, puis \u00ab Sur l'\u00e9cran d'accueil \u00bb.",android:"Touche le menu (\u22ee), puis \u00ab Ajouter \u00e0 l'\u00e9cran d'accueil \u00bb.",button:"Installer"},
@@ -3074,9 +3075,10 @@ setLang(secLang);
     else { desc.style.display=""; desc.textContent=isIOS?t.ios:t.android; icon.innerHTML=isIOS?SVG_SHARE:SVG_MENU; btn.hidden=true; }
   }
   window.__refreshInstallToast=function(){ if(box&&!box.hidden) render(); };
-  window.dismissInstall=function(){ window.__installDismissed=true; box.classList.remove("show"); setTimeout(function(){box.hidden=true;},250); };
+  window.dismissInstall=function(fromX){ window.__installDismissed=true; if(fromX && dstate===""){ dstate="grace"; try{localStorage.setItem("ontap_install_state","grace");}catch(e){} } box.classList.remove("show"); setTimeout(function(){box.hidden=true;},250); };
   function show(){
-    if(isStandalone||installed||window.__installDismissed||!(isIOS||isAndroid)) return;
+    if(isStandalone||installed||dstate==="done"||window.__installDismissed||!(isIOS||isAndroid)) return;
+    if(dstate==="grace"){ dstate="done"; try{localStorage.setItem("ontap_install_state","done");}catch(e){} }
     render(); box.hidden=false; requestAnimationFrame(function(){box.classList.add("show");});
   }
   window.addEventListener("beforeinstallprompt",function(e){ e.preventDefault(); deferred=e; if(!box.hidden) render(); });
