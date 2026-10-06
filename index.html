@@ -2568,13 +2568,19 @@ function applyAccent(ch){
   updateAccentBar();
   checkPractice();
 }
+const CLASSIFIERS = ["con","cái","chiếc","cây","quả","trái","ly","lon","chai","đĩa","dĩa","tô","chén","cốc","bài","quyển","cuốn","hột","hạt","tấm","đôi","căn","bộ","nhóm","bức","tờ","miếng","khúc","lát","cục","ổ","chùm","nải","chuyến","người","vị","món"];
+function stripClassifier(w){
+  const i = w.indexOf(" ");
+  if(i<=0) return null;
+  if(CLASSIFIERS.indexOf(w.slice(0,i))>=0) return w.slice(i+1).trim();
+  return null;
+}
 function buildVariants(s){
   const out = new Set();
+  function push(w){ if(w){ out.add(w); const st=stripClassifier(w); if(st) out.add(st); } }
   s.split("/").forEach(part=>{
-    const noParen = normWord(part.replace(/\([^)]*\)/g," "));
-    if(noParen) out.add(noParen);
-    const keepInner = normWord(part.replace(/[()]/g," "));
-    if(keepInner) out.add(keepInner);
+    push(normWord(part.replace(/\([^)]*\)/g," ")));
+    push(normWord(part.replace(/[()]/g," ")));
   });
   return [...out];
 }
